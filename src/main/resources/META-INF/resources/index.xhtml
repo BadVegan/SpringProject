@@ -1,0 +1,98 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:b="http://bootsfaces.net/ui">
+
+<h:head>
+</h:head>
+<h:body>
+
+
+    <h:form>
+        <p:messages id="messages" showDetail="true" autoUpdate="true" />
+        <p:panel>
+            <h:panelGrid id="gridCustomer" columns="3" cellpadding="5">
+                <h:outputLabel for="customer" value="Customer:" style="font-weight:bold"/>
+                <p:inputText id="customer" value="#{customerView.customerName}" required="true" label="Customer"/>
+            </h:panelGrid>
+            <p:commandButton value="Add Customer" validateClient="true"
+                             actionListener="#{customerView.addCustomer}" update="formCustomer cityForm"/>
+        </p:panel>
+    </h:form>
+    <h:form>
+        <p:panel>
+            <h:panelGrid id="gridCity" columns="3" cellpadding="5">
+                <h:outputLabel for="city" value="City:" style="font-weight:bold"/>
+                <p:inputText id="city" value="#{customerView.cityName}" required="true" label="City"/>
+            </h:panelGrid>
+            <p:commandButton value="Add City" validateClient="true"
+                             actionListener="#{customerView.addCity}" update="formCustomer cityForm"/>
+        </p:panel>
+    </h:form>
+
+
+    <h:form id="formCustomer">
+        <p:dataTable id="customersTable" var="customer" value="#{customerView.customersList}"
+                     editable="true">
+
+            <p:ajax event="rowEdit" listener="#{customerView.onRowEdit}" update=":formCustomer:customersTable :cityForm:cityTable"/>
+            <p:ajax event="cellEdit" listener="#{dtEditView.onCellEdit}"/>
+
+            <p:column headerText="Name"> 
+                <p:cellEditor> 
+                    <f:facet name="output">
+                        <h:outputText value="#{customer.name}"/>
+                    </f:facet>
+                    <f:facet name="input">
+                        <p:inputText value="#{customer.name}" style="width:100%"/>
+                    </f:facet>
+                </p:cellEditor>
+            </p:column>
+
+            <p:column headerText="City">
+                <p:cellEditor>
+                    <f:facet name="output">
+                        <h:outputText value="#{customer.city.name}" required="true"/>
+                    </f:facet>
+                    <f:facet name="input">
+                        <h:selectOneMenu value="#{customerView.selectedCity}" converter="omnifaces.SelectItemsConverter" style="width:100%">
+                            <f:selectItem itemLabel="Wybierz miasto" itemValue=""/>
+                            <f:selectItems value="#{customerView.citiesList}" var="selectedCity" itemValue="#{selectedCity}" itemLabel="#{selectedCity.name}"/>
+                        </h:selectOneMenu>
+                    </f:facet>
+                </p:cellEditor>
+            </p:column>
+
+            <p:column style="width:32px">
+                <p:rowEditor/>
+            </p:column>
+
+            <p:column style="width:32px">
+                <p:commandButton actionListener="#{customerView.deleteAction(customer)}"
+                                 id="iconOnly" icon="ui-icon-closethick" title="Delete" update="formCustomer cityForm"/>
+            </p:column>
+        </p:dataTable>
+    </h:form>
+
+    <h:form id="cityForm">
+        <p:dataTable id="cityTable" var="selectedCity" value="#{customerView.citiesList}">
+            <f:facet name="header">
+                Cities
+            </f:facet>
+            <p:subTable id="citySubTable" var="customer" value="#{selectedCity.customers}">
+                <f:facet name="header">
+                    <h:outputText value="#{selectedCity.name}"/>
+                </f:facet>
+                <p:column>
+                    -
+                    <h:outputText value="#{customer.name}"/>
+                </p:column>
+            </p:subTable>
+        </p:dataTable>
+    </h:form>
+
+
+</h:body>
+</html>

@@ -1,0 +1,6 @@
+jsf:
+  primefaces:
+    THEME: bootstrap
+    FONT_AWESOME: true
+  bootsfaces:
+    USETHEME: true
